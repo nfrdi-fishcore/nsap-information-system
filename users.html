@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/sidebar.css">
+    <!-- Notification Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/notifications.css">
+    <!-- Button Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/buttons.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .page-title p {
+            color: #718096;
+            margin-bottom: 0;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Mobile horizontal scroll for table */
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-responsive table {
+                min-width: 600px;
+            }
+
+            /* Ensure action buttons stay aligned horizontally in mobile */
+            .table-responsive .text-end {
+                white-space: nowrap;
+            }
+
+            .table-responsive .action-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 0.25rem;
+                min-width: 36px;
+                height: 36px;
+            }
+        }
+
+        .table thead th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 1rem;
+            color: #2d3748;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
+            background-color: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 0.875rem;
+            margin-right: 0.75rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #def7ec;
+            color: #03543f;
+        }
+
+        .status-inactive {
+            background-color: #fde8e8;
+            color: #9b1c1c;
+        }
+
+        .role-badge {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            color: #718096;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: #2d3748;
+        }
+
+        .action-btn.edit:hover {
+            color: #3182ce;
+        }
+
+        .action-btn.delete:hover {
+            color: #e53e3e;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Component -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>User Management</h1>
+                <p>Manage system access and permissions</p>
+            </div>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="bi bi-plus-lg me-2"></i>Add New User
+            </button>
+        </div>
+
+        <div class="content-card position-relative">
+            <!-- Search and Filter -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 bg-light" id="userSearch"
+                            placeholder="Search by name or email...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select bg-light" id="roleFilter">
+                        <option value="">All Roles</option>
+                        <option value="superadmin">Superadmin</option>
+                        <option value="admin">Admin</option>
+                        <option value="encoder">Encoder</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select bg-light" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select bg-light" id="regionFilter">
+                        <option value="">All Regions</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" id="exportBtn" title="Export to CSV">
+                        <i class="bi bi-download me-1"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-responsive">
+                <table class="table mb-0" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-5 d-none">
+                <div class="mb-3 text-muted">
+                    <i class="bi bi-people" style="font-size: 3rem;"></i>
+                </div>
+                <h5>No Users Found</h5>
+                <p class="text-muted">Try adjusting your search or filters.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" name="full_name" required>
+                            <div class="form-text">Enter the user's full name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" name="email" required>
+                            <div class="form-text">Enter the user's email address (used for login).</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Region</label>
+                                <select class="form-select" name="region_id" required>
+                                    <option value="" selected disabled>Select Region</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the region assigned to this user.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Office</label>
+                                <input type="text" class="form-control" name="office" placeholder="e.g. PFO">
+                                <div class="form-text">Enter the user's office (optional).</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Designation</label>
+                                <input type="text" class="form-control" name="designation"
+                                    placeholder="e.g. NSAP Leader">
+                                <div class="form-text">Enter the user's designation (optional).</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" required minlength="6">
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="role" required>
+                                <option value="viewer">Viewer</option>
+                                <option value="encoder">Encoder</option>
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Superadmin</option>
+                            </select>
+                            <div class="form-text">Select the user's role to determine their permissions.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="addUserForm" class="btn btn-add">Create User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" name="user_id">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" name="full_name" required>
+                            <div class="form-text">Enter the user's full name.</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Region</label>
+                                <select class="form-select" name="region_id" required>
+                                    <option value="" selected disabled>Select Region</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the region assigned to this user.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Office</label>
+                                <input type="text" class="form-control" name="office" placeholder="e.g. PFO">
+                                <div class="form-text">Enter the user's office (optional).</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Designation</label>
+                                <input type="text" class="form-control" name="designation" placeholder="e.g. Leader">
+                                <div class="form-text">Enter the user's designation (optional).</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="role" required>
+                                <option value="viewer">Viewer</option>
+                                <option value="encoder">Encoder</option>
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Superadmin</option>
+                            </select>
+                            <div class="form-text">Select the user's role to determine their permissions.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                            <div class="form-text">Set the user's account status (active or inactive).</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editUserForm" class="btn btn-edit">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete User Confirmation Modal -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Deactivate User via Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to deactivate this user? This will prevent them from logging in.</p>
+                    <p class="text-muted small mb-0">This action can be undone by an admin later.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="confirmDeleteBtn">Deactivate User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activate User Confirmation Modal -->
+    <div class="modal fade" id="activateUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success">Activate User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to activate this user?</p>
+                    <p class="text-muted small mb-0">They will regain access to the system immediately.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-add" id="confirmActivateBtn">Activate User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuration (must load before script.js) -->
+    <script src="config.js"></script>
+    <!-- Shared Scripts -->
+    <script src="src/assets/js/core/script.js"></script>
+    <script src="src/assets/js/core/notifications.js"></script>
+    <script src="src/assets/js/core/components.js"></script>
+    <!-- Load utility modules -->
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+    <!-- Load module script -->
+    <script src="src/assets/js/modules/users.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            const session = await getSession();
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Insert sidebar
+            Components.insert('sidebar', '#sidebarContainer');
+            Components.initSidebar();
+        });
+    </script>
+</body>
+
+</html>

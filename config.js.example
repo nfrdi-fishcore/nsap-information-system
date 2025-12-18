@@ -1,0 +1,24 @@
+/**
+ * NSAP Information System - Configuration Template
+ * 
+ * INSTRUCTIONS:
+ * 1. Copy this file to 'config.js' (without .example)
+ * 2. Replace the placeholder values with your actual Supabase credentials
+ * 3. Never commit config.js to version control (it's in .gitignore)
+ * 
+ * To get your Supabase credentials:
+ * - Go to your Supabase project dashboard
+ * - Navigate to Settings > API
+ * - Copy the Project URL and anon/public key
+ */
+
+const CONFIG = {
+    SUPABASE_URL: 'https://your-project-id.supabase.co',
+    SUPABASE_ANON_KEY: 'your-anon-key-here'
+};
+
+// Make config available globally
+if (typeof window !== 'undefined') {
+    window.CONFIG = CONFIG;
+}
+

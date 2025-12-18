@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="src/assets/css/pages/landing.css">
+</head>
+
+<body>
+    <!-- Main Split Screen Container -->
+    <div class="split-screen-container">
+
+        <!-- Left Column: Showcase Content -->
+        <div class="split-showcase">
+            <div class="showcase-content">
+                <!-- Logos Container -->
+                <div class="logos-container">
+                    <img src="https://www.nfrdi.da.gov.ph/tpjf/images/icon.png" alt="NFRDI Logo" class="showcase-logo">
+                    <img src="https://mlkhadblfumf.i.optimole.com/w:162/h:154/q:85/https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg?v=1.3.1"
+                        alt="NSAP Logo" class="showcase-logo">
+                </div>
+
+                <!-- Title -->
+                <h1 class="showcase-title">
+                    National Stock Assessment Program<br>
+                    Information System
+                </h1>
+
+                <!-- Description -->
+                <p class="showcase-description">
+                    The NSAP Information System is an upgraded, web-based version of the current NSAP Database, which
+                    was built using Microsoft Access. This new system leverages modern technologies to provide a secure,
+                    scalable, and user-friendly platform for managing fisheries stock assessment data. It allows
+                    real-time data entry, analysis, and reporting, replacing the limitations of desktop-based Access
+                    with cloud-hosted database for backend storage and authentication. The system supports multiple user
+                    roles for controlled access, ensuring data integrity while enabling collaboration across regions.
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Column: Login Interface -->
+        <div class="split-login">
+            <div class="login-wrapper">
+
+                <!-- Login Message -->
+                <div class="login-header">
+                    <i class="bi bi-person-circle text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h2>Welcome Back</h2>
+                    <p class="text-muted">Sign in to access your dashboard</p>
+                </div>
+
+                <!-- Alert Container -->
+                <div id="alertContainer"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm">
+                    <!-- Email Field -->
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-bold small text-uppercase text-muted">Email
+                            Address</label>
+                        <div class="input-group">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required
+                                autocomplete="email">
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-4">
+                        <label for="password"
+                            class="form-label fw-bold small text-uppercase text-muted">Password</label>
+                        <div class="input-group">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" class="form-control" id="password" placeholder="Enter your password"
+                                required autocomplete="current-password">
+                            <button type="button"
+                                class="btn position-absolute end-0 top-50 translate-middle-y z-3 border-0 bg-transparent text-muted"
+                                id="togglePassword">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label text-muted small" for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none fw-semibold">Forgot Password?</a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-login" id="loginBtn">
+                        <span id="loginBtnText">
+                            Sign In <i class="bi bi-arrow-right ms-2"></i>
+                        </span>
+                        <span id="loginBtnSpinner" style="display: none;">
+                            <span class="spinner-border spinner-border-sm me-2"></span>Logging in...
+                        </span>
+                    </button>
+
+                    <!-- Footer -->
+                    <div class="text-center mt-5 text-muted small">
+                        <p class="mb-0">&copy; 2025 NSAP Information System</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuration (must load before script.js) -->
+    <script src="config.js"></script>
+    <!-- Load utility modules -->
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+    <!-- Shared Script -->
+    <script src="src/assets/js/core/script.js"></script>
+
+    <!-- Login Logic Script -->
+    <script>
+        // Password Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            if (type === 'password') {
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            } else {
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            }
+        });
+
+        // Show Alert
+        function showAlert(message, type = 'danger') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} d-flex align-items-center mb-4 border-0 shadow-sm`;
+            alert.innerHTML = `
+                <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                <div>${message}</div>
+            `;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000); // Auto dismiss
+        }
+
+        // Check for existing session and Remember Me preference on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check for saved email (Remember Me)
+            const savedEmail = localStorage.getItem('savedEmail');
+            const rememberMeSaved = localStorage.getItem('rememberMe') === 'true';
+
+            if (savedEmail && rememberMeSaved) {
+                document.getElementById('email').value = savedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+
+            if (window._supabase) {
+                const { data: { session } } = await window._supabase.auth.getSession();
+                if (session) {
+                    // Already logged in - redirect
+                    window.location.href = 'dashboard.html';
+                }
+            }
+        });
+
+        // Login Handler
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const loginBtnSpinner = document.getElementById('loginBtnSpinner');
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Validation (check if Validation utility is loaded)
+            if (typeof Validation !== 'undefined' && Validation.isValidEmail) {
+                // Use validation utility
+                if (!Validation.isValidEmail(email)) {
+                    showAlert('Please enter a valid email address', 'danger');
+                    return;
+                }
+                const passwordValidation = Validation.isRequired(password, 'Password');
+                if (!passwordValidation.isValid) {
+                    showAlert(passwordValidation.error, 'danger');
+                    return;
+                }
+            } else {
+                // Fallback validation if utility not loaded
+                if (!email || !password) {
+                    showAlert('Please fill in all fields', 'danger');
+                    return;
+                }
+                // Basic email format check
+                if (!email.includes('@') || !email.includes('.')) {
+                    showAlert('Please enter a valid email address', 'danger');
+                    return;
+                }
+            }
+
+            // UI Loading State
+            loginBtn.disabled = true;
+            loginBtnText.style.display = 'none';
+            loginBtnSpinner.style.display = 'inline-block';
+
+            try {
+                // Use Supabase client from script.js
+                if (!window._supabase) throw new Error('System error: Supabase client not initialized');
+
+                const { data, error } = await window._supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                // 2. CHECK USER STATUS
+                // Verify if the user is active in dbo_user
+                const { data: userProfile, error: profileError } = await window._supabase
+                    .from('dbo_user')
+                    .select('status')
+                    .eq('user_id', data.user.id)
+                    .single();
+
+                if (profileError) {
+                    // Start: Fix for missing profile or row
+                    // If no profile exists, create one or allow login depending on policy
+                    // For now, we assume profile must exist. If not, treat as error.
+                    console.error('Profile fetch error:', profileError);
+                    await window._supabase.auth.signOut();
+                    throw new Error('User profile not found. Please contact support.');
+                }
+
+                if (userProfile && userProfile.status === 'inactive') {
+                    // User is deactivated
+                    await window._supabase.auth.signOut();
+                    throw new Error('Your account is deactivated. Please contact the administrator.');
+                }
+
+                // Handle Remember Me
+                if (rememberMe) {
+                    localStorage.setItem('rememberMe', 'true');
+                    localStorage.setItem('savedEmail', email);
+                } else {
+                    localStorage.removeItem('rememberMe');
+                    localStorage.removeItem('savedEmail');
+                }
+
+                // Set session
+                localStorage.setItem('userSession', JSON.stringify(data.session));
+                localStorage.setItem('sb-vidhefbvribdzlrqmtgv-auth-token', JSON.stringify(data.session));
+
+                // Show success
+                showAlert('Login successful! Redirecting...', 'success');
+
+                // Redirect
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert(error.message || 'Login failed. Please check your credentials.', 'danger');
+                loginBtn.disabled = false;
+                loginBtnText.style.display = 'inline';
+                loginBtnSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

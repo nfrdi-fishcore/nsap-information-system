@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/sidebar.css">
+    <!-- Notification Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/notifications.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .page-title p {
+            color: #718096;
+            margin-bottom: 0;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: #001c44;
+        }
+
+        .section-content {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: #4a5568;
+        }
+
+        .feature-list li:before {
+            content: "\f26e";
+            font-family: "bootstrap-icons";
+            position: absolute;
+            left: 0;
+            color: #001c44;
+            font-size: 1.25rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card h4 i {
+            color: #001c44;
+        }
+
+        .info-card p {
+            color: #718096;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, rgba(0, 28, 68, 0.05) 0%, rgba(0, 28, 68, 0.02) 100%);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .logo-section img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .version-info {
+            background: #f8fafc;
+            border-left: 4px solid #001c44;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .version-info strong {
+            color: #2d3748;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Component -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>About NSAP Information System</h1>
+                <p>Learn more about the National Stock Assessment Program Information System</p>
+            </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="content-card">
+            <h2 class="section-title">
+                <i class="bi bi-info-circle-fill"></i>
+                Overview
+            </h2>
+            <div class="section-content">
+                <p>
+                    The <strong>National Stock Assessment Program (NSAP) Information System</strong> is a comprehensive
+                    web-based platform designed to streamline and enhance the collection, management, and analysis of
+                    fisheries data across the Philippines. Developed under the auspices of the Bureau of Fisheries and
+                    Aquatic Resources (BFAR) and the National Fisheries Research and Development Institute (NFRDI), this
+                    system serves as a critical tool for monitoring and assessing fish stocks to support sustainable
+                    fisheries management.
+                </p>
+                <p>
+                    The system enables authorized personnel to efficiently record, track, and analyze fishing activities,
+                    catch data, vessel information, and species data, providing valuable insights for evidence-based
+                    decision-making in fisheries management and conservation efforts.
+                </p>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="content-card">
+            <h2 class="section-title">
+                <i class="bi bi-star-fill"></i>
+                Key Features
+            </h2>
+            <div class="section-content">
+                <ul class="feature-list">
+                    <li>
+                        <strong>Data Entry Management:</strong> Comprehensive forms for recording sampling days, gear
+                        unloads, vessel unloads, vessel catches, and sample length measurements
+                    </li>
+                    <li>
+                        <strong>Reference Tables:</strong> Centralized management of landing centers, fishing grounds,
+                        fishing effort units, species, gear types, and vessel information
+                    </li>
+                    <li>
+                        <strong>Analytics Dashboard:</strong> Interactive charts and visualizations for trend analysis,
+                        comparative analysis, and performance metrics
+                    </li>
+                    <li>
+                        <strong>Reporting System:</strong> Generate comprehensive reports including monthly reports,
+                        regional reports, species-focused reports, and custom report builder
+                    </li>
+                    <li>
+                        <strong>Role-Based Access Control:</strong> Secure access management with different permission
+                        levels for Superadmin, Admin, Encoder, and Viewer roles
+                    </li>
+                    <li>
+                        <strong>Data Export:</strong> Export data to multiple formats including CSV, Excel, and PDF for
+                        further analysis and sharing
+                    </li>
+                    <li>
+                        <strong>User Management:</strong> Comprehensive user administration tools for managing system
+                        access and permissions
+                    </li>
+                    <li>
+                        <strong>Mobile Responsive:</strong> Fully responsive design that works seamlessly on desktop,
+                        tablet, and mobile devices
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Information Grid -->
+        <div class="content-card">
+            <h2 class="section-title">
+                <i class="bi bi-building"></i>
+                System Information
+            </h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>
+                        <i class="bi bi-shield-check"></i>
+                        Security
+                    </h4>
+                    <p>
+                        The system implements robust security measures including authentication, role-based access
+                        control, and data encryption to ensure the integrity and confidentiality of fisheries data.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h4>
+                        <i class="bi bi-database"></i>
+                        Data Management
+                    </h4>
+                    <p>
+                        Built on modern cloud infrastructure with secure database storage, ensuring reliable data
+                        persistence and backup capabilities for critical fisheries information.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h4>
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Analytics
+                    </h4>
+                    <p>
+                        Advanced analytics capabilities provide insights into catch trends, species distribution, gear
+                        performance, and regional comparisons to support data-driven fisheries management.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h4>
+                        <i class="bi bi-people"></i>
+                        Collaboration
+                    </h4>
+                    <p>
+                        Multi-user support enables teams across different regions to collaborate effectively, with
+                        role-based permissions ensuring appropriate access levels for each user.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purpose Section -->
+        <div class="content-card">
+            <h2 class="section-title">
+                <i class="bi bi-bullseye"></i>
+                Purpose & Mission
+            </h2>
+            <div class="section-content">
+                <p>
+                    The NSAP Information System is designed to support the National Stock Assessment Program's mission
+                    of providing accurate, timely, and comprehensive fisheries data for sustainable resource management.
+                    By digitizing and streamlining data collection processes, the system aims to:
+                </p>
+                <ul class="feature-list">
+                    <li>Improve the accuracy and efficiency of fisheries data collection</li>
+                    <li>Enable real-time monitoring and analysis of fishing activities</li>
+                    <li>Support evidence-based decision-making in fisheries management</li>
+                    <li>Facilitate data sharing and collaboration among stakeholders</li>
+                    <li>Contribute to the sustainable management of Philippine fisheries resources</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Organization Section -->
+        <div class="content-card">
+            <div class="logo-section">
+                <img src="https://mlkhadblfumf.i.optimole.com/w:162/h:154/q:85/https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg?v=1.3.1"
+                    alt="NSAP Logo">
+                <h3 style="color: #2d3748; margin-top: 1rem;">National Stock Assessment Program</h3>
+                <p style="color: #718096; margin: 0.5rem 0 0 0;">
+                    National Fisheries Research and Development Institute
+                </p>
+            </div>
+        </div>
+
+        <!-- Version Info -->
+        <div class="content-card">
+            <div class="version-info">
+                <p style="margin: 0;">
+                    <strong>System Version:</strong> 1.1.1<br>
+                    <strong>Last Updated:</strong> December 18, 2025<br>
+                    <strong>Developed for:</strong> National Fisheries Research and Development Institute (NFRDI)<br>
+                    <strong>Managed by:</strong> FishCoRe PMO - FishCRRM 1.1 Sub-component - NSAP Team
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuration (must load before script.js) -->
+    <script src="config.js"></script>
+    <!-- Shared Scripts -->
+    <script src="src/assets/js/core/script.js"></script>
+    <script src="src/assets/js/core/notifications.js"></script>
+    <script src="src/assets/js/core/components.js"></script>
+    <!-- Load utility modules -->
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            const session = await getSession();
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Insert sidebar
+            Components.insert('sidebar', '#sidebarContainer');
+            Components.initSidebar();
+        });
+    </script>
+</body>
+
+</html>
+

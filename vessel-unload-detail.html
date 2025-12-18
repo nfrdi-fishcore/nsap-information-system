@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel Unload Detail - NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="src/assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="src/assets/css/components/notifications.css">
+    <link rel="stylesheet" href="src/assets/css/components/buttons.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+        .main-content {
+            padding: 2rem;
+            position: relative;
+            min-height: calc(100vh - 80px);
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .page-title h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+        .page-title p {
+            color: #718096;
+            margin: 0;
+        }
+        .summary-card {
+            background: white;
+            color: #2d3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+        .summary-header {
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+        .summary-header h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+            font-size: 1.125rem;
+        }
+        .summary-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+        }
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .summary-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4a5568;
+            min-width: 140px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .summary-value {
+            font-weight: 500;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+        .data-containers {
+            margin-top: 1.5rem;
+            display: grid;
+            /* Use fr units so the right column aligns flush with the summary width while keeping the left wider */
+            grid-template-columns: minmax(0, 4fr) minmax(0, 2fr);
+            width: 100%;
+            gap: 1.5rem;
+        }
+        @media (max-width: 992px) {
+            .data-containers {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+        .data-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .data-card h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .vessel-catch-row.selected-row {
+            background-color: #dbeafe !important;
+            border-left: 4px solid #3b82f6;
+        }
+        .vessel-catch-row.selected-row td {
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .placeholder {
+            color: #718096;
+        }
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Horizontal scrollable table on mobile */
+        @media (max-width: 768px) {
+            /* Vessel Catch table - horizontal scroll */
+            .data-card:first-child .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                display: block;
+                width: 100%;
+            }
+
+            .data-card:first-child .table-responsive table {
+                min-width: 600px;
+                width: 100%;
+            }
+
+            /* Ensure action buttons stay horizontally aligned with proper spacing */
+            .data-card:first-child .table-responsive table tbody td.text-end {
+                white-space: nowrap;
+            }
+
+            .data-card:first-child .table-responsive table tbody td.text-end .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                margin-right: 0.25rem;
+            }
+
+            .data-card:first-child .table-responsive table tbody td.text-end .btn:last-child {
+                margin-right: 0;
+            }
+
+            /* Sample Length table - fit without scrolling */
+            .data-card:last-child .table-responsive {
+                overflow-x: visible;
+                display: block;
+                width: 100%;
+            }
+
+            .data-card:last-child .table-responsive table {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .data-card:last-child .table-responsive table th,
+            .data-card:last-child .table-responsive table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.875rem;
+            }
+
+            .data-card:last-child .table-responsive table th.text-center,
+            .data-card:last-child .table-responsive table td.text-center {
+                text-align: center;
+            }
+
+            .data-card:last-child .table-responsive table th.text-end,
+            .data-card:last-child .table-responsive table td.text-end {
+                text-align: right;
+            }
+
+            .data-card:last-child .table-responsive table tbody td.text-end .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+                min-width: auto;
+            }
+        }
+        .table thead th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .table tbody td {
+            vertical-align: middle;
+            padding: 0.75rem;
+            color: #2d3748;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .rows-per-page {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        /* Full-width white Add buttons in tables (match Sample Day Detail) */
+        .vessel-catch-add-btn {
+            background: #ffffff;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .vessel-catch-add-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e0;
+        }
+        .summary-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .summary-actions .btn {
+            flex: 1;
+            min-width: 140px;
+            max-width: 200px;
+            padding: 0.625rem 1.25rem;
+        }
+        .summary-actions .back-btn {
+            margin-left: auto;
+            flex: 0 0 auto;
+        }
+        .summary-actions .btn-outline-light {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+        .summary-actions .btn-outline-light:hover {
+            background: #f8fafc;
+            color: #2d3748;
+            border-color: #cbd5e0;
+        }
+        @media (max-width: 768px) {
+            .summary-content {
+                grid-template-columns: 1fr;
+            }
+            .summary-actions {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+            .summary-actions .btn {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+        .effort-table {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .effort-table thead th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+        }
+        .effort-table tbody td {
+            padding: 0.45rem 0.75rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .effort-table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        .full-page-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: #2d3748;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            min-height: calc(100vh - 80px);
+        }
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            margin-top: 1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>NSAP Data Entry - Vessel Sample</h1>
+                <p>View vessel unload information - Catch and Sample Lengths.</p>
+            </div>
+        </div>
+
+        <div class="full-page-loading-overlay" id="fullPageLoadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading vessel unload...</div>
+        </div>
+
+        <div class="summary-card" id="summaryCard">
+            <div class="summary-header">
+                <h5>Vessel Unload Summary</h5>
+            </div>
+            <div class="summary-content">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <div class="summary-item">
+                            <span class="summary-label">Vessel:</span>
+                            <span class="summary-value" id="summaryVessel">-</span>
+                        </div>
+                <div class="summary-item">
+                    <span class="summary-label">Gear:</span>
+                    <span class="summary-value" id="summaryGearUnload">-</span>
+                </div>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm align-middle mb-0 effort-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45%"></th>
+                                        <th class="text-center" style="width: 27%">Value</th>
+                                        <th class="text-center" style="width: 28%">Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Fishing Effort</td>
+                                        <td class="text-center"><span id="summaryEffort1">-</span></td>
+                                        <td class="text-center"><span id="summaryEffortUnit1">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fishing Effort #2</td>
+                                        <td class="text-center"><span id="summaryEffort2">-</span></td>
+                                        <td class="text-center"><span id="summaryEffortUnit2">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fishing Effort #3</td>
+                                        <td class="text-center"><span id="summaryEffort3">-</span></td>
+                                        <td class="text-center"><span id="summaryEffortUnit3">-</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 effort-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35%"></th>
+                                        <th class="text-center" style="width: 32%">Total Boat Catch</th>
+                                        <th class="text-center" style="width: 33%">Total Sub-Sample Catch</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>No. of Boxes</td>
+                                        <td class="text-center" id="summaryBoxesTotal">-</td>
+                                        <td class="text-center" id="summaryBoxesSamp">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Weight in KG</td>
+                                        <td class="text-center" id="summaryCatchTotalTable">-</td>
+                                        <td class="text-center" id="summaryCatchSampTable">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Raising Factor</td>
+                                        <td class="text-center" id="summaryRaisingFactor">-</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex gap-2 mt-3 summary-actions">
+                            <button class="btn btn-edit" id="vuEditBtn">
+                                <i class="bi bi-pencil"></i>
+                                <span>Edit</span>
+                            </button>
+                            <button class="btn btn-delete" id="vuDeleteBtn">
+                                <i class="bi bi-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                            <button class="btn btn-outline-light back-btn" id="vuReturnBtn">
+                                <i class="bi bi-arrow-left"></i>
+                                <span>Sampling Day</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-containers">
+            <div class="data-card">
+                <h5>Vessel Catch</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Species</th>
+                                <th class="text-center">Sample (kg)</th>
+                                <th class="text-center">Catch (kg)</th>
+                                <th class="text-center">Length Type</th>
+                                <th class="text-center">Length Unit</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vesselCatchTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="vesselCatchTableFooter" style="display: none;">
+                            <tr>
+                                <td colspan="6" class="text-start">
+                                    <button type="button" class="btn vessel-catch-add-btn btn-sm w-100" id="addVesselCatchFooterBtn">
+                                        <i class="bi bi-plus-lg me-2"></i>Add Vessel Catch
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="table-secondary fw-bold">
+                                <td>Total</td>
+                                <td class="text-center" id="vesselCatchTotalSampKg">-</td>
+                                <td class="text-center" id="vesselCatchTotalCatchKg">-</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="data-card">
+                <h5>Sample Length</h5>
+                <div id="sampleLengthSpeciesInfo" class="mb-3 p-3 bg-light rounded" style="display: none;">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex align-items-start">
+                            <strong class="me-2" style="min-width: 140px;">Species:</strong>
+                            <span id="sampleLengthSpeciesName">-</span>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <strong class="me-2" style="min-width: 140px;">Family:</strong>
+                            <span id="sampleLengthSpeciesFamily">-</span>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <strong class="me-2" style="min-width: 140px;">Scientific Name:</strong>
+                            <span id="sampleLengthSpeciesScientific">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Length</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sampleLengthTableBody">
+                            <tr>
+                                <td colspan="2" class="text-center py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="sampleLengthTableFooter" style="display: none;">
+                            <tr>
+                                <td colspan="2" class="text-start">
+                                    <button type="button" class="btn vessel-catch-add-btn btn-sm w-100" id="addSampleLengthFooterBtn">
+                                        <i class="bi bi-plus-lg me-2"></i>Add Sample Length
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="pagination-controls" id="sampleLengthControls" style="display: none;">
+                    <div class="rows-per-page">
+                        <label class="form-label mb-0 small" for="sampleLengthPageSize">Show:</label>
+                        <select class="form-select form-select-sm" id="sampleLengthPageSize" style="width: auto;">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="small text-muted" id="sampleLengthRowsInfo">Showing 0 to 0 of 0 entries</span>
+                    </div>
+                    <nav aria-label="Sample Length pagination">
+                        <ul class="pagination pagination-sm mb-0" id="sampleLengthPagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Vessel Catch Modal -->
+    <div class="modal fade" id="vcModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="vcModalTitle">Add Vessel Catch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vcForm">
+                        <input type="hidden" id="vcCatchId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Vessel Unload</label>
+                                <input type="text" class="form-control" id="vcVUnloadDisplay" disabled>
+                                <div class="form-text">This vessel catch will be linked to this vessel unload.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Species</label>
+                                <select class="form-select" id="vcSpeciesId" required>
+                                    <option value="" disabled selected>Select Species</option>
+                                </select>
+                                <div class="form-text">Select the species caught.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch (kg)</label>
+                                <input type="number" class="form-control" id="vcCatchKg" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Sample (kg)</label>
+                                <input type="number" class="form-control" id="vcSampKg" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Length Type</label>
+                                <select class="form-select" id="vcLenId">
+                                    <option value="">Select Length Type</option>
+                                    <option value="Total Length">Total Length</option>
+                                    <option value="Mantle Length">Mantle Length</option>
+                                    <option value="Fork Length">Fork Length</option>
+                                    <option value="Eye Orbit Fork Length">Eye Orbit Fork Length</option>
+                                    <option value="Carapace Length">Carapace Length</option>
+                                    <option value="Carapace Width">Carapace Width</option>
+                                </select>
+                                <div class="form-text">Select the type of length measurement.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Length Unit</label>
+                                <select class="form-select" id="vcLenunitId">
+                                    <option value="">Select Unit</option>
+                                    <option value="mm">Millimeters (mm)</option>
+                                    <option value="cm">Centimeters (cm)</option>
+                                </select>
+                                <div class="form-text">Select the unit of measurement for length.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Total (kg)</label>
+                                <input type="number" class="form-control" id="vcTotalKg" step="0.01" min="0" placeholder="0.00">
+                                <div class="form-text">Enter the total weight in kilograms (optional).</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Total Weight if Measured (kg)</label>
+                                <input type="number" class="form-control" id="vcTotalwtIfmeasuredKg" step="0.01" min="0" placeholder="0.00">
+                                <div class="form-text">Enter the total weight if measured (optional).</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="vcSaveBtn">
+                        <span class="save-label">Save Vessel Catch</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Vessel Catch Confirmation Modal -->
+    <div class="modal fade" id="vcDeleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this vessel catch record?</p>
+                    <p class="small text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="vcConfirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Sample Length Modal -->
+    <div class="modal fade" id="slModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="slModalTitle">Add Sample Length</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="slForm">
+                        <input type="hidden" id="slLengthId">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Species (Vessel Catch)</label>
+                            <select class="form-select" id="slCatchSelect" disabled>
+                                <option value="">Select species...</option>
+                            </select>
+                            <div class="form-text">Sample length will be linked to the selected vessel catch.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Length</label>
+                            <input type="number" class="form-control" id="slLengthValue" step="0.01" min="0" placeholder="0.00" required>
+                            <div class="form-text">Enter the length measurement.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="slSaveBtn">
+                        <span class="sl-save-label">Save Sample Length</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Sample Length Confirmation Modal -->
+    <div class="modal fade" id="slDeleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this sample length record?</p>
+                    <p class="small text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="slConfirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Vessel Unload Modal -->
+    <div class="modal fade" id="vuEditModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="vuEditModalTitle">Edit Vessel Unload</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vuEditForm">
+                        <input type="hidden" id="vuEditVUnloadId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Gear Unload</label>
+                                <select class="form-select" id="vuEditUnloadGrId" disabled>
+                                    <option value="" disabled selected>Select Gear Unload...</option>
+                                </select>
+                                <div class="form-text">Auto-filled from current record.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Vessel</label>
+                                <select class="form-select" id="vuEditBoatId" required>
+                                    <option value="" disabled selected>Select Vessel...</option>
+                                </select>
+                                <div class="form-text">Select the vessel.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 1</label>
+                                <input type="number" class="form-control" id="vuEditEffort" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Primary effort (enabled if unit exists).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 1</label>
+                                <select class="form-select" id="vuEditUniteffortId" disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled from gear (read-only).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Total</label>
+                                <input type="number" class="form-control" id="vuEditBoxesTotal" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Total boxes (optional).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch Total (kg)</label>
+                                <input type="number" class="form-control" id="vuEditCatchTotal" readonly step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Automatically calculated from vessel catch records (sum of Catch (kg) for all species).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Samp</label>
+                                <input type="number" class="form-control" id="vuEditBoxesSamp" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Sample boxes (optional).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch Samp (kg)</label>
+                                <input type="number" class="form-control" id="vuEditCatchSamp" readonly step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Automatically calculated from vessel catch records (sum of Sample (kg) for all species).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Pieces ID</label>
+                                <input type="number" class="form-control" id="vuEditBoxesPiecesId" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Boxes pieces ID (optional).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 2 <span class="text-muted">(Optional)</span></label>
+                                <input type="number" class="form-control" id="vuEditEffort2" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Secondary effort value.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 2</label>
+                                <select class="form-select" id="vuEditUniteffort2Id" disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled from gear (read-only).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 3 <span class="text-muted">(Optional)</span></label>
+                                <input type="number" class="form-control" id="vuEditEffort3" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Tertiary effort value.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 3</label>
+                                <select class="form-select" id="vuEditUniteffort3Id" disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled from gear (read-only).</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="vuEditSaveBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteVesselUnloadModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this vessel unload record?</p>
+                    <p class="small text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="confirmDeleteVesselUnloadBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+    <script src="src/assets/js/core/notifications.js"></script>
+    <script src="src/assets/js/core/components.js"></script>
+    <script src="src/assets/js/core/script.js"></script>
+    <script src="src/assets/js/modules/vessel-unload-detail.js"></script>
+</body>
+</html>
+

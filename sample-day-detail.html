@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sampling Day Details - NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/sidebar.css">
+    <!-- Notification Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/notifications.css">
+    <!-- Button Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/buttons.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 2rem;
+            position: relative;
+            min-height: calc(100vh - 80px); /* Ensure minimum height for centering */
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .page-title p {
+            color: #718096;
+            margin-bottom: 0;
+        }
+
+        .summary-card {
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control:disabled,
+        .form-select:disabled {
+            background-color: #f7fafc;
+            opacity: 1;
+        }
+
+        .icon-check {
+            color: #10b981;
+            font-size: 1.5rem;
+        }
+
+        .icon-cross {
+            color: #ef4444;
+            font-size: 1.5rem;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 16px;
+            color: #2d3748;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .full-page-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: #2d3748;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            min-height: calc(100vh - 80px); /* Match main-content min-height for proper centering */
+        }
+
+        .summary-card {
+            background: white;
+            color: #2d3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .summary-header {
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-header h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+            font-size: 1.125rem;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* More compact summary on small screens */
+        @media (max-width: 768px) {
+            .summary-card {
+                padding: 1.0rem 1.0rem;
+                margin-bottom: 1rem;
+            }
+
+            .summary-content {
+                gap: 1rem;
+            }
+
+            .summary-header {
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .summary-item {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4a5568;
+            min-width: 140px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-weight: 500;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .summary-sampling-day {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-sampling-day-text {
+            font-weight: 500;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .summary-actions {
+            display: flex;
+            flex-direction: row;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .summary-actions .btn {
+            flex: 1;
+            min-width: 140px;
+            max-width: 200px;
+            padding: 0.625rem 1.25rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .summary-actions .back-btn {
+            margin-left: auto;
+        }
+
+        .summary-actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .summary-actions .btn:active {
+            transform: translateY(0);
+        }
+
+        .summary-actions .btn i {
+            font-size: 1rem;
+        }
+
+        .summary-actions .btn-outline-light {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-actions .btn-outline-light:hover {
+            background: #f8fafc;
+            color: #2d3748;
+            border-color: #cbd5e0;
+        }
+
+        .summary-actions .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: 2px solid #3b82f6;
+        }
+
+        .summary-actions .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .summary-actions .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: 2px solid #ef4444;
+        }
+
+        .summary-actions .btn-danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .summary-actions {
+                flex-direction: column;
+            }
+
+            .summary-actions .btn {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .summary-actions .back-btn {
+                margin-left: 0;
+            }
+        }
+
+        .data-containers {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .data-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 992px) {
+            .data-containers {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .data-container h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 0.75rem;
+            color: #2d3748;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        /* Row selection styling */
+        .gear-unload-row {
+            transition: background-color 0.2s ease;
+        }
+
+        .gear-unload-row:hover {
+            background-color: #f1f5f9 !important;
+        }
+
+        .gear-unload-row.selected-row {
+            background-color: #dbeafe !important;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .gear-unload-row.selected-row td {
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        /* Mobile/Tablet layout for gear action buttons in table */
+        @media (max-width: 768px) {
+            .gear-action-cell {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 0.25rem;
+                white-space: nowrap;
+            }
+
+            .gear-action-cell .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                flex-shrink: 0;
+            }
+
+            .gear-action-cell .btn.me-1 {
+                margin-right: 0.25rem;
+            }
+
+            .gear-action-cell .btn:last-child {
+                margin-right: 0;
+            }
+        }
+
+        .gear-action-buttons {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Mobile layout for gear action buttons */
+        @media (max-width: 768px) {
+            .gear-action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .gear-action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Full-width white Add buttons in tables */
+        .gear-unload-add-btn,
+        .vessel-unload-add-btn {
+            background: #ffffff;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .gear-unload-add-btn:hover,
+        .vessel-unload-add-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e0;
+            color: #1f2937;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Component -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1>NSAP Data Entry - Sampling Day Details</h1>
+                <p>View and manage sampling day record - Gear Unload and Vessel Unload.</p>
+            </div>
+        </div>
+
+        <!-- Full Page Loading Overlay -->
+        <div class="full-page-loading-overlay" id="fullPageLoadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading record details...</div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card" id="summaryCard">
+            <div class="summary-content">
+                <div class="summary-header">
+                    <h5>Sampling Day Summary</h5>
+                </div>
+                <div>
+                    <div class="summary-item">
+                        <span class="summary-label">Region:</span>
+                        <span class="summary-value" id="summaryRegion">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Landing Center:</span>
+                        <span class="summary-value" id="summaryLandingCenter">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Fishing Ground:</span>
+                        <span class="summary-value" id="summaryFishingGround">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Sampling Date:</span>
+                        <span class="summary-value" id="summaryDate">-</span>
+                    </div>
+                </div>
+                <div class="summary-sampling-day" id="summarySamplingDay">
+                    <span id="summarySamplingDayIcon"></span>
+                    <span class="summary-sampling-day-text" id="summarySamplingDayText">-</span>
+                </div>
+                <div class="summary-actions">
+                    <button class="btn btn-edit" id="editBtn">
+                        <i class="bi bi-pencil"></i>
+                        <span>Edit</span>
+                    </button>
+                    <button class="btn btn-delete" id="deleteBtn">
+                        <i class="bi bi-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                    <a href="data-entry.html" class="btn btn-outline-light back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to List</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Containers -->
+        <div class="data-containers">
+            <!-- Left Container: Gear Unload -->
+            <div class="data-container">
+                <h5>Gear Unload</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fishing Gear</th>
+                                <th class="text-center">No. of Vessel(s)</th>
+                                <th class="text-center">Catch Landed (kg)</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gearUnloadTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="gearUnloadTableFooter" style="display: none;">
+                            <tr>
+                                <td colspan="4" class="text-start">
+                                    <button type="button" class="btn gear-unload-add-btn btn-sm" onclick="openAddGearUnloadModal()">
+                                        <i class="bi bi-plus-lg me-2"></i>Add Gear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="table-secondary fw-bold">
+                                <td>Total</td>
+                                <td class="text-center" id="gearUnloadTotalBoats">0</td>
+                                <td class="text-center" id="gearUnloadTotalCatch">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Container: Vessel Unload -->
+            <div class="data-container">
+                <h5>Vessel Unload</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Vessel Name</th>
+                                <th class="text-center">Total Sample Catch (kg)</th>
+                                <th class="text-center">Total Boat Catch (kg)</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vesselUnloadTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="vesselUnloadTableFooter" style="display: none;">
+                            <tr>
+                                <td colspan="4" class="text-start">
+                                    <button type="button" class="btn vessel-unload-add-btn btn-sm" onclick="handleAddVesselUnload()">
+                                        <i class="bi bi-plus-lg me-2"></i>New Record
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="table-secondary fw-bold">
+                                <td>Total</td>
+                                <td class="text-center" id="vesselUnloadTotalSample">0.00</td>
+                                <td class="text-center" id="vesselUnloadTotalCatch">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="editModalTitle">Edit Sampling Day</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Date</label>
+                                <input type="date" class="form-control" id="editDate" required>
+                                <div class="form-text">Select the date for this sampling day.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Region</label>
+                                <select class="form-select" id="editRegion" required>
+                                    <option value="" disabled selected>Select Region...</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the region for this sampling day.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Landing Center</label>
+                                <select class="form-select" id="editLandingCenter" required>
+                                    <option value="" disabled selected>Select Landing Center...</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the landing center for this sampling day.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Ground</label>
+                                <select class="form-select" id="editFishingGround" required>
+                                    <option value="" disabled selected>Select Fishing Ground...</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the fishing ground for this sampling day.</div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Remarks</label>
+                                <textarea class="form-control" id="editRemarks" rows="2" placeholder="Optional remarks..."></textarea>
+                                <div class="form-text">Enter any additional remarks or notes about this sampling day (optional).</div>
+                            </div>
+                        </div>
+                        <!-- Sampling Day Indicator -->
+                        <div id="editSampleDayIndicator" class="mt-3 p-3 rounded" style="display: none; background-color: #f8f9fa; border-left: 4px solid #6c757d;">
+                            <div class="d-flex align-items-center">
+                                <i id="editSampleDayIcon" class="bi me-2" style="font-size: 1.25rem;"></i>
+                                <span id="editSampleDayText" class="fw-medium"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="saveEditBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this sampling day record?</p>
+                    <p class="small text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Gear Unload Confirmation Modal -->
+    <div class="modal fade" id="deleteGearUnloadModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this gear unload record? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="confirmDeleteGearUnloadBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Gear Unload Modal -->
+    <div class="modal fade" id="gearUnloadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="gearUnloadModalTitle">Add Gear Unload</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gearUnloadForm">
+                        <input type="hidden" id="gearUnloadId">
+                        <input type="hidden" id="gearUnloadDayId">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Sample Day</label>
+                                <input type="text" class="form-control" id="gearUnloadDayIdDisplay" readonly>
+                                <div class="form-text">Sample day is automatically set to the current record.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Gear</label>
+                                <select class="form-select" id="gearUnloadGrId" required>
+                                    <option value="" disabled selected>Select Gear...</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <div class="form-text">Select the gear type used.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boats (No. of Vessels)</label>
+                                <input type="number" class="form-control" id="gearUnloadBoats" readonly step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Automatically calculated from vessel unload records.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch (kg)</label>
+                                <input type="number" class="form-control" id="gearUnloadCatch" readonly step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Automatically calculated from vessel unload records (sum of Total Boat Catch).</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="saveGearUnloadBtn">Save Gear Unload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vessel Unload Modal (mirrors vessel-unload page) -->
+    <div class="modal fade" id="vesselUnloadModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="vesselUnloadModalTitle">Add Vessel Unload</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vesselUnloadQuickForm">
+                        <input type="hidden" id="vesselUnloadId">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Gear Unload</label>
+                                <select class="form-select" id="unloadGrId" required disabled>
+                                    <option value="" disabled selected>Select Gear Unload...</option>
+                                </select>
+                                <div class="form-text">Select the gear unload record.</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Vessel</label>
+                                <select class="form-select" id="boatId" required>
+                                    <option value="" disabled selected>Select Vessel...</option>
+                                </select>
+                                <div class="form-text">Select the vessel.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 1</label>
+                                <input type="number" class="form-control" id="effort" required step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Enter the primary effort value.</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 1</label>
+                                <select class="form-select" id="uniteffortId" required disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled based on selected gear (not editable).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Total</label>
+                                <input type="number" class="form-control" id="boxesTotal" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Enter the total number of boxes (optional).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch Total (kg)</label>
+                                <input type="number" class="form-control" id="catchTotal" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Enter the total catch in kilograms (optional).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Samp</label>
+                                <input type="number" class="form-control" id="boxesSamp" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Enter the number of sample boxes (optional).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Catch Samp (kg)</label>
+                                <input type="number" class="form-control" id="catchSamp" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Enter the sample catch in kilograms (optional).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Boxes Pieces ID</label>
+                                <input type="number" class="form-control" id="boxesPiecesId" step="1" min="0"
+                                    placeholder="0">
+                                <div class="form-text">Enter the boxes pieces ID (optional).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 2 <span class="text-muted">(Optional)</span></label>
+                                <input type="number" class="form-control" id="effort2" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Enter the secondary effort value (optional).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 2</label>
+                                <select class="form-select" id="uniteffort2Id" disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled based on selected gear (not editable).</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Effort 3 <span class="text-muted">(Optional)</span></label>
+                                <input type="number" class="form-control" id="effort3" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">Enter the tertiary effort value (optional).</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Fishing Effort 3</label>
+                                <select class="form-select" id="uniteffort3Id" disabled>
+                                    <option value="" disabled selected>Select Fishing Effort...</option>
+                                </select>
+                                <div class="form-text">Auto-filled based on selected gear (not editable).</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light text-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-edit" id="saveVesselUnloadQuickBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuration (must load before script.js) -->
+    <script src="config.js"></script>
+    <script src="src/assets/js/core/script.js"></script>
+    <script src="src/assets/js/core/notifications.js"></script>
+    <script src="src/assets/js/core/components.js"></script>
+    <!-- Load utility modules -->
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+    <!-- Load detail page logic -->
+    <script src="src/assets/js/modules/sample-day-detail.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Components) {
+                window.Components.insert('sidebar', '#sidebarContainer');
+                window.Components.initSidebar();
+            }
+        });
+    </script>
+</body>
+
+</html>
+

@@ -1,0 +1,19 @@
+{
+  "name": "nsap-information-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "jest --passWithNoTests"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^22.1.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "roots": [
+      "<rootDir>/tests"
+    ]
+  }
+}
+

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - NSAP Information System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://nsap.nfrdi.da.gov.ph/dist/img/logo/nsap_orig.svg">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/sidebar.css">
+    <!-- Notification Styles -->
+    <link rel="stylesheet" href="src/assets/css/components/notifications.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 2rem;
+            position: relative;
+            min-height: calc(100vh - 80px);
+        }
+
+        .analytics-header {
+            margin-bottom: 2rem;
+        }
+
+        .analytics-header h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-header p {
+            color: #718096;
+        }
+
+        .filters-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .filters-card h5 {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+            border-color: #cbd5e1;
+        }
+
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .chart-card-header h5 {
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 1rem;
+        }
+
+        .chart-container.small {
+            height: 300px;
+        }
+
+        .chart-container.large {
+            height: 500px;
+        }
+
+        .export-btn {
+            background: #007aff;
+            border: none;
+            color: white;
+            padding: 0.375rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .export-btn i {
+            font-size: 0.875rem;
+        }
+
+        .export-btn:hover {
+            background: #0051d5;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+            color: white;
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(0, 122, 255, 0.2);
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .date-presets {
+            min-width: 200px;
+        }
+
+        .date-presets label.form-label {
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: inherit;
+        }
+
+        @media (max-width: 768px) {
+            .filters-card > div.d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .date-presets {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-comparison-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+            border-color: #cbd5e1;
+        }
+
+        .stat-comparison-card h6 {
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-comparison-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-comparison-card .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .btn-group .btn-check:checked + .btn {
+            background: #007aff;
+            border-color: #007aff;
+            color: white;
+        }
+
+        .btn-group .btn-outline-primary {
+            border-color: #007aff;
+            color: #007aff;
+        }
+
+        .btn-group .btn-outline-primary:hover {
+            background-color: rgba(0, 122, 255, 0.1);
+        }
+
+        .full-page-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 80px; /* Start after sidebar (collapsed width) */
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: #2d3748;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        @media (max-width: 768px) {
+            .full-page-loading-overlay {
+                left: 0; /* Full width on mobile */
+            }
+        }
+
+        .full-page-loading-overlay .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .full-page-loading-overlay .loading-text {
+            margin-top: 1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title i {
+            color: #f59e0b;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .table-container table {
+            font-size: 0.875rem;
+        }
+
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .table-container thead th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0.75rem 0.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-container tbody td {
+            padding: 0.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-container tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .table-container tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 1200px) {
+            .top-performers-section .row > div {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .efficiency-metrics-section {
+            margin-top: 2rem;
+        }
+
+        .efficiency-card {
+            height: 100%;
+        }
+
+        .efficiency-card .stat-value {
+            font-size: 1.75rem;
+        }
+
+        .efficiency-card .form-select-sm {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Component -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Full Page Loading Overlay -->
+        <div class="full-page-loading-overlay" id="fullPageLoadingOverlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading analytics data...</div>
+        </div>
+        <div class="analytics-container">
+            <!-- Header -->
+            <div class="analytics-header">
+                <h1>Analytics Dashboard</h1>
+                <p>Comprehensive data analysis and insights for NSAP data</p>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="filters-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="bi bi-funnel"></i> Filters</h5>
+                    
+                    <!-- Quick Date Range Presets -->
+                    <div class="date-presets">
+                        <label for="datePresetSelect" class="form-label mb-1">Quick Select</label>
+                        <select class="form-select" id="datePresetSelect">
+                            <option value="">All Data</option>
+                            <option value="last7days">Last 7 Days</option>
+                            <option value="last30days">Last 30 Days</option>
+                            <option value="last3months">Last 3 Months</option>
+                            <option value="last6months">Last 6 Months</option>
+                            <option value="thismonth">This Month</option>
+                            <option value="lastmonth">Last Month</option>
+                            <option value="thisyear">This Year</option>
+                            <option value="lastyear">Last Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label for="dateRangeFrom">From Date</label>
+                            <input type="date" class="form-control" id="dateRangeFrom">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label for="dateRangeTo">To Date</label>
+                            <input type="date" class="form-control" id="dateRangeTo">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label for="regionFilter">Region</label>
+                            <select class="form-select" id="regionFilter">
+                                <option value="">All Regions</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary w-100" id="applyFiltersBtn">
+                                <i class="bi bi-search"></i> Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Stats -->
+            <div class="comparison-grid" id="comparisonStats">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Trend Analysis Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Catch Volume Trends</h5>
+                        <div class="btn-group" role="group" id="trendViewToggle">
+                            <input type="radio" class="btn-check" name="trendView" id="trendViewMonthly" value="monthly">
+                            <label class="btn btn-sm btn-outline-primary" for="trendViewMonthly">Monthly</label>
+                            <input type="radio" class="btn-check" name="trendView" id="trendViewDaily" value="daily" checked>
+                            <label class="btn btn-sm btn-outline-primary" for="trendViewDaily">Daily</label>
+                        </div>
+                    </div>
+                    <button class="export-btn" id="exportTrendsBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Trends to CSV">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Comparative Analysis -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h5><i class="bi bi-pie-chart"></i> Species Distribution</h5>
+                            <button class="export-btn" id="exportSpeciesBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Species Distribution to CSV">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="speciesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h5><i class="bi bi-bar-chart"></i> Regional Comparison</h5>
+                            <button class="export-btn" id="exportRegionalBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Regional Comparison to CSV">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="regionalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gear Analysis -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h5><i class="bi bi-diagram-3"></i> Gear Type Analysis</h5>
+                    <button class="export-btn" id="exportGearBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Gear Analysis to CSV">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="gearChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Performers Dashboard -->
+            <div class="top-performers-section">
+                <h4 class="section-title mb-4"><i class="bi bi-trophy"></i> Top Performers</h4>
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h5><i class="bi bi-ship"></i> Top 10 Vessels</h5>
+                                <button class="export-btn" id="exportTopVesselsBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Top Vessels to CSV">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;">#</th>
+                                            <th>Vessel</th>
+                                            <th class="text-end" style="width: 80px;">Catch</th>
+                                            <th class="text-end" style="width: 60px;">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topVesselsTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h5><i class="bi bi-fish"></i> Top 10 Species</h5>
+                                <button class="export-btn" id="exportTopSpeciesBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Top Species to CSV">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;">#</th>
+                                            <th>Species</th>
+                                            <th class="text-end" style="width: 80px;">Catch</th>
+                                            <th class="text-end" style="width: 60px;">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topSpeciesTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h5><i class="bi bi-building"></i> Top 10 Landing Centers</h5>
+                                <button class="export-btn" id="exportTopLandingCentersBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Top Landing Centers to CSV">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;">#</th>
+                                            <th>Landing Center</th>
+                                            <th class="text-end" style="width: 80px;">Catch</th>
+                                            <th class="text-end" style="width: 60px;">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topLandingCentersTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h5><i class="bi bi-geo-alt"></i> Top 10 Fishing Grounds</h5>
+                                <button class="export-btn" id="exportTopFishingGroundsBtn" data-bs-toggle="tooltip" data-bs-placement="top" title="Export Top Fishing Grounds to CSV">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;">#</th>
+                                            <th>Fishing Ground</th>
+                                            <th class="text-end" style="width: 80px;">Catch</th>
+                                            <th class="text-end" style="width: 60px;">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topFishingGroundsTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Efficiency Metrics Section -->
+            <div class="efficiency-metrics-section">
+                <h4 class="section-title mb-4"><i class="bi bi-speedometer"></i> Efficiency Metrics</h4>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="stat-comparison-card efficiency-card">
+                            <h6><i class="bi bi-ship"></i> Catch per Vessel</h6>
+                            <div class="stat-value" id="catchPerVesselValue">-</div>
+                            <div class="stat-change" style="color: #64748b;">
+                                <i class="bi bi-info-circle"></i>
+                                <span id="catchPerVesselInfo">Total: <span id="catchPerVesselTotal">-</span> KG / <span id="catchPerVesselVessels">-</span> vessels</span>
+                            </div>
+                            <div class="mt-2">
+                                <select class="form-select form-select-sm" id="vesselFilterSelect">
+                                    <option value="">All Vessels</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-comparison-card efficiency-card">
+                            <h6><i class="bi bi-diagram-3"></i> Avg Catch per Gear</h6>
+                            <div class="stat-value" id="avgCatchPerGearValue">-</div>
+                            <div class="stat-change" style="color: #64748b;">
+                                <i class="bi bi-info-circle"></i>
+                                <span id="avgCatchPerGearInfo">Average across all gear types</span>
+                            </div>
+                            <div class="mt-2">
+                                <select class="form-select form-select-sm" id="gearFilterSelect">
+                                    <option value="">All Gear Types</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-comparison-card efficiency-card">
+                            <h6><i class="bi bi-graph-up-arrow"></i> Catch per Effort Unit</h6>
+                            <div class="stat-value" id="catchPerEffortValue">-</div>
+                            <div class="stat-change" style="color: #64748b;">
+                                <i class="bi bi-info-circle"></i>
+                                <span id="catchPerEffortInfo">CPUE: <span id="catchPerEffortTotal">-</span> KG / <span id="catchPerEffortEffort">-</span> units</span>
+                            </div>
+                            <div class="mt-2">
+                                <select class="form-select form-select-sm" id="effortUnitFilterSelect">
+                                    <option value="">All Effort Units</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-comparison-card efficiency-card">
+                            <h6><i class="bi bi-calendar-check"></i> Catch per Sample Day</h6>
+                            <div class="stat-value" id="catchPerSampleDayValue">-</div>
+                            <div class="stat-change" style="color: #64748b;">
+                                <i class="bi bi-info-circle"></i>
+                                <span id="catchPerSampleDayInfo">Total: <span id="catchPerSampleDayTotal">-</span> KG / <span id="catchPerSampleDayCount">-</span> landings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Configuration (must load before script.js) -->
+    <script src="config.js"></script>
+    <script src="src/assets/js/core/script.js"></script>
+    <script src="src/assets/js/core/notifications.js"></script>
+    <script src="src/assets/js/core/components.js"></script>
+    <!-- Load utility modules -->
+    <script src="src/assets/js/utils/constants.js"></script>
+    <script src="src/assets/js/utils/errorHandler.js"></script>
+    <script src="src/assets/js/utils/validation.js"></script>
+    <!-- Analytics Cache (must load before analyticsService) -->
+    <script src="src/assets/js/utils/analyticsCache.js"></script>
+    <!-- Load analytics service -->
+    <script src="src/assets/js/services/analyticsService.js"></script>
+    <!-- Load analytics logic -->
+    <script src="src/assets/js/modules/analytics.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init components
+            if (window.Components) {
+                window.Components.insert('sidebar', '#sidebarContainer');
+                window.Components.initSidebar();
+            }
+
+            // Initialize Bootstrap tooltips for export buttons
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+
+</html>
+
