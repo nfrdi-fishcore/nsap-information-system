@@ -1,0 +1,7 @@
+<!-- Footer Component -->
+<footer class="text-white text-center">
+    <div class="container py-4">
+        <p>&copy; 2025 NSAP Information System. All rights reserved.</p>
+        <p class="mb-0">National Fisheries Research and Development Institute</p>
+    </div>
+</footer>

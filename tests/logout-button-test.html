@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout Button Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            padding: 50px;
+            font-family: Arial, sans-serif;
+        }
+
+        .test-btn {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+        }
+
+        .log {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid #dee2e6;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .log-entry.success {
+            color: #28a745;
+        }
+
+        .log-entry.error {
+            color: #dc3545;
+        }
+
+        .log-entry.info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><i class="bi bi-bug-fill"></i> Logout Button Test</h1>
+        <p>This page tests if the logout functionality is working correctly.</p>
+
+        <div class="alert alert-info">
+            <strong>Note:</strong> Make sure you've hard refreshed the dashboard page (Ctrl + Shift + R) before testing.
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Test 1: Check if logout function exists</h3>
+                <button class="btn btn-primary test-btn" onclick="test1()">
+                    <i class="bi bi-1-circle"></i> Test Global Logout Function
+                </button>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Test 2: Test logout functionality</h3>
+                <button class="btn btn-danger test-btn" onclick="test2()">
+                    <i class="bi bi-2-circle"></i> Test Logout (Will Clear Session)
+                </button>
+                <p class="text-muted mt-2">This will actually log you out if you're logged in.</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Test 3: Check Supabase client</h3>
+                <button class="btn btn-info test-btn" onclick="test3()">
+                    <i class="bi bi-3-circle"></i> Check Supabase
+                </button>
+            </div>
+        </div>
+
+        <div class="log" id="logContainer">
+            <h4>Test Log:</h4>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/script.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const logEntries = document.getElementById('logEntries');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logEntries.appendChild(entry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+
+        function test1() {
+            log('Testing if global logout function exists...', 'info');
+
+            if (typeof window.logout === 'function') {
+                log('✅ SUCCESS: window.logout function exists!', 'success');
+                log('Function signature: ' + window.logout.toString().substring(0, 100) + '...', 'info');
+            } else {
+                log('❌ FAIL: window.logout function not found!', 'error');
+                log('This means script.js is not loaded or logout function is not exported.', 'error');
+            }
+        }
+
+        async function test2() {
+            log('Testing logout functionality...', 'info');
+
+            if (!window.logout) {
+                log('❌ FAIL: Logout function not found. Run Test 1 first.', 'error');
+                return;
+            }
+
+            if (!confirm('This will actually log you out. Continue?')) {
+                log('Test cancelled by user.', 'info');
+                return;
+            }
+
+            try {
+                log('Calling window.logout()...', 'info');
+                await window.logout();
+                log('✅ SUCCESS: Logout completed!', 'success');
+                log('You should be redirected to login.html now...', 'info');
+            } catch (error) {
+                log('❌ FAIL: Logout error: ' + error.message, 'error');
+                log('Error details: ' + error.stack, 'error');
+            }
+        }
+
+        function test3() {
+            log('Checking Supabase client...', 'info');
+
+            if (window._supabase) {
+                log('✅ SUCCESS: Supabase client is initialized!', 'success');
+                log('Supabase URL: ' + (window._supabase.supabaseUrl || 'N/A'), 'info');
+            } else {
+                log('❌ FAIL: Supabase client not initialized!', 'error');
+                log('Check if script.js is loaded correctly.', 'error');
+            }
+        }
+
+        // Auto-run Test 1 on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded. Running automatic tests...', 'info');
+            test1();
+            test3();
+        });
+    </script>
+</body>
+
+</html>

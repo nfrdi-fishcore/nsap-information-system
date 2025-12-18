@@ -1,0 +1,288 @@
+/**
+ * Standardized Button Colors for NSAP Information System
+ * 
+ * Color Scheme:
+ * - Green: Add/Create/New buttons
+ * - Blue: Edit/Update buttons
+ * - Red: Delete buttons
+ * - Yellow: View buttons
+ * 
+ * Button Styling (based on summary card buttons):
+ * - Font size: 0.875rem
+ * - Font weight: 500
+ * - Padding: 0.625rem 1.25rem
+ * - Border radius: 8px
+ * - Transition: all 0.2s ease
+ * - Box shadow: 0 2px 4px rgba(0, 0, 0, 0.15)
+ * - Hover: translateY(-2px), box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
+ */
+
+/* Base Button Styles - Applied to all buttons */
+.btn {
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid transparent;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn i {
+    font-size: 1rem;
+}
+
+/* Small button variants */
+.btn-sm {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-sm i {
+    font-size: 0.875rem;
+}
+
+/* Add/Create/New Buttons - Green */
+.btn-add,
+.btn-create,
+.btn-new,
+.btn-success {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.btn-add:hover,
+.btn-create:hover,
+.btn-new:hover,
+.btn-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+    color: white;
+}
+
+.btn-outline-add,
+.btn-outline-create,
+.btn-outline-new,
+.btn-outline-success {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.btn-outline-add:hover,
+.btn-outline-create:hover,
+.btn-outline-new:hover,
+.btn-outline-success:hover {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+/* Edit/Update Buttons - Blue */
+.btn-edit,
+.btn-update {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.btn-edit:hover,
+.btn-update:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+.btn-outline-edit,
+.btn-outline-update {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.btn-outline-edit:hover,
+.btn-outline-update:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+/* Override Bootstrap btn-primary to be blue (for Edit/Update) */
+.btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: white !important;
+}
+
+.btn-outline-primary {
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+}
+
+/* Delete Buttons - Red */
+.btn-delete {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
+
+.btn-outline-delete {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.btn-outline-delete:hover {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+/* Override Bootstrap btn-danger to be red (for Delete) */
+.btn-danger {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+}
+
+.btn-outline-danger {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* View Buttons - Yellow */
+.btn-view {
+    background-color: #eab308;
+    border-color: #eab308;
+    color: #1f2937;
+}
+
+.btn-view:hover {
+    background-color: #ca8a04;
+    border-color: #ca8a04;
+    color: #1f2937;
+}
+
+.btn-outline-view {
+    border-color: #eab308;
+    color: #eab308;
+}
+
+.btn-outline-view:hover {
+    background-color: #eab308;
+    border-color: #eab308;
+    color: #1f2937;
+}
+
+/* Override Bootstrap btn-warning to be yellow (for View) */
+.btn-warning {
+    background-color: #eab308 !important;
+    border-color: #eab308 !important;
+    color: #1f2937 !important;
+}
+
+.btn-warning:hover {
+    background-color: #ca8a04 !important;
+    border-color: #ca8a04 !important;
+    color: #1f2937 !important;
+}
+
+.btn-outline-warning {
+    border-color: #eab308 !important;
+    color: #eab308 !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: #eab308 !important;
+    border-color: #eab308 !important;
+    color: #1f2937 !important;
+}
+
+/* Small button variants */
+.btn-sm.btn-add,
+.btn-sm.btn-create,
+.btn-sm.btn-new,
+.btn-sm.btn-success {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.btn-sm.btn-edit,
+.btn-sm.btn-update {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.btn-sm.btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.btn-sm.btn-delete {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.btn-sm.btn-danger {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}
+
+.btn-sm.btn-view {
+    background-color: #eab308;
+    border-color: #eab308;
+    color: #1f2937;
+}
+
+.btn-sm.btn-warning {
+    background-color: #eab308 !important;
+    border-color: #eab308 !important;
+    color: #1f2937 !important;
+}
+

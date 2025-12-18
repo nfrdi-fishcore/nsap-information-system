@@ -1,0 +1,184 @@
+/**
+ * Unified Loading Component - NSAP Information System
+ * Provides consistent loading states across all pages
+ */
+
+/* =========================================
+   Full Page Loading Overlay
+   (Covers main content only, not sidebar)
+   ========================================= */
+
+.main-content {
+    position: relative;
+}
+
+.main-content.loading {
+    filter: blur(4px);
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    border-radius: 16px;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid #e2e8f0;
+    border-top-color: #007aff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 1rem;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   Inline Loading States
+   (For tables, cards, containers)
+   ========================================= */
+
+.loading-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #64748b;
+}
+
+.loading-inline .loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border-width: 3px;
+    margin-right: 0.75rem;
+}
+
+.loading-inline .loading-text {
+    margin-top: 0;
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   Table Loading State
+   ========================================= */
+
+.table-loading {
+    position: relative;
+    min-height: 200px;
+}
+
+.table-loading .loading-overlay {
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* =========================================
+   Card Loading State
+   ========================================= */
+
+.card-loading {
+    position: relative;
+    min-height: 150px;
+}
+
+.card-loading .loading-overlay {
+    border-radius: 16px;
+}
+
+/* =========================================
+   Small Loading Spinner
+   (For buttons, inline elements)
+   ========================================= */
+
+.loading-spinner-sm {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #e2e8f0;
+    border-top-color: #007aff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* =========================================
+   Button Loading State
+   ========================================= */
+
+.btn.loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-right-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.btn-primary.loading::after,
+.btn-add.loading::after {
+    border-top-color: white;
+    border-right-color: white;
+}
+
+.btn-secondary.loading::after,
+.btn-outline-primary.loading::after {
+    border-top-color: #6c757d;
+    border-right-color: #6c757d;
+}
+
+/* =========================================
+   Responsive Adjustments
+   ========================================= */
+
+@media (max-width: 768px) {
+    .loading-spinner {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-width: 3px;
+    }
+
+    .loading-text {
+        font-size: 0.875rem;
+    }
+
+    .main-content.loading {
+        filter: blur(2px);
+    }
+}
+
